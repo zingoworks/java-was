@@ -71,9 +71,35 @@ public class HttpRequestUtilsTest {
         assertThat(pair, is(new Pair("Content-Length", "59")));
     }
 
+    //implements
+
     @Test
     public void getQueryString() throws IllegalArgumentException {
         String url = "/user/create?userId=zingo&password=test&name=aksdkw";
         assertEquals(HttpRequestUtils.getQueryString(url), "userId=zingo&password=test&name=aksdkw");
+    }
+
+    @Test
+    public void getRequestMethod_GETMethod() {
+        String firstLine = "GET /user/create?userId=zingo&password=test&name=test&email=test%40test HTTP/1.1";
+        assertEquals(HttpRequestUtils.getRequestMethod(firstLine), "GET");
+    }
+
+    @Test
+    public void getRequestMethod_not_GETMethod() {
+        String firstLine = "GET /user/create?_method=post&userId=zingo&password=test&name=test&email=test%40test HTTP/1.1";
+        assertEquals(HttpRequestUtils.getRequestMethod(firstLine), "POST");
+    }
+
+    @Test
+    public void getUrl_GETMethod() {
+        String firstLine = "GET /user/create?userId=zingo&password=test&name=test&email=test%40test HTTP/1.1";
+        assertEquals(HttpRequestUtils.getUrl(firstLine), "/user/create?userId=zingo&password=test&name=test&email=test%40test");
+    }
+
+    @Test
+    public void getUrl_not_GETMethod() {
+        String firstLine = "GET /user/create?_method=post&userId=zingo&password=test&name=test&email=test%40test HTTP/1.1";
+        assertEquals(HttpRequestUtils.getUrl(firstLine), "/user/create");
     }
 }

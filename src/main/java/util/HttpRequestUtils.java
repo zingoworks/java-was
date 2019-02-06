@@ -8,6 +8,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 public class HttpRequestUtils {
+    private static final String GET = "GET";
 
     public static String getQueryString(String url) {
         if(!url.contains("?")) {
@@ -15,6 +16,22 @@ public class HttpRequestUtils {
         }
 
         return url.split("\\?")[1];
+    }
+
+    public static String getRequestMethod(String firstLine) {
+        if(firstLine.contains("_method")) {
+            return firstLine.substring(firstLine.indexOf("=") + 1, firstLine.indexOf("&")).toUpperCase();
+        }
+
+        return GET;
+    }
+
+    public static String getUrl(String firstLine) {
+        if(HttpRequestUtils.getRequestMethod(firstLine).equals(GET)) {
+            return firstLine.split(" ")[1];
+        }
+
+        return firstLine.split(" ")[1].substring(0, firstLine.split(" ")[1].indexOf("?"));
     }
 
     /**
