@@ -4,11 +4,16 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Map;
 import java.util.Objects;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpRequestUtils;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -27,14 +32,22 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             String line = br.readLine();
-            log.debug("request line : {}", line);
+            log.debug("*** request line : {}", line);
 
             String url = line.split(BLANK)[1];
-            log.debug("url : {}", url);
+            log.debug("*** url : {}", url);
+
+            if(url.contains("?")) {
+                String queryString = HttpRequestUtils.getQueryString(url);
+                log.debug("*** queryString : {}", queryString);
+
+                Map<String, String> parsedQueryString = HttpRequestUtils.parseQueryString(queryString);
+                DataBase.addUser(User.of(parsedQueryString));
+            }
 
             while(!line.equals("")) {
                 line = br.readLine();
-                log.debug("header : {}", line);
+                log.debug("*** header : {}", line);
             }
 
             DataOutputStream dos = new DataOutputStream(out);

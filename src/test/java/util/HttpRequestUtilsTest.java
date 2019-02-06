@@ -70,4 +70,10 @@ public class HttpRequestUtilsTest {
         Pair pair = HttpRequestUtils.parseHeader(header);
         assertThat(pair, is(new Pair("Content-Length", "59")));
     }
+
+    @Test
+    public void getQueryString() throws IllegalArgumentException {
+        String url = "/user/create?userId=zingo&password=test&name=aksdkw";
+        assertEquals(HttpRequestUtils.getQueryString(url), "userId=zingo&password=test&name=aksdkw");
+    }
 }
