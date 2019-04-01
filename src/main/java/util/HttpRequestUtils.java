@@ -36,6 +36,10 @@ public class HttpRequestUtils {
                 .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue()));
     }
 
+    public static Pair parseHeader(String header) {
+        return getKeyValue(header, ": ");
+    }
+
     static Pair getKeyValue(String keyValue, String regex) {
         if (Strings.isNullOrEmpty(keyValue)) {
             return null;
@@ -47,10 +51,6 @@ public class HttpRequestUtils {
         }
 
         return new Pair(tokens[0], tokens[1]);
-    }
-
-    public static Pair parseHeader(String header) {
-        return getKeyValue(header, ": ");
     }
 
     //아래로 추가 구현부-----------------------------------------------
