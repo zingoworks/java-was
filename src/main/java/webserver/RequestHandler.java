@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpRequestUtils;
@@ -31,7 +32,9 @@ public class RequestHandler extends Thread {
                 return;
             }
 
-            byte[] body = Files.readAllBytes(new File("./webapp" + HttpRequestUtils.getUrl(line)).toPath());
+            String url = HttpRequestUtils.getUrl(line);
+
+            byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
             DataOutputStream dos = new DataOutputStream(out);
             response200Header(dos, body.length);
             responseBody(dos, body);

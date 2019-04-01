@@ -6,16 +6,9 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import model.User;
 
 public class HttpRequestUtils {
-
-    public static String[] parseRequestLine(String requestLine) {
-        return requestLine.split(" ");
-    }
-
-    public static String getUrl(String requestLine) {
-        return parseRequestLine(requestLine)[1];
-    }
 
     /**
      * @param : queryString은 URL에서 ? 이후에 전달되는 field1=value1&field2=value2 형식임
@@ -59,6 +52,50 @@ public class HttpRequestUtils {
     public static Pair parseHeader(String header) {
         return getKeyValue(header, ": ");
     }
+
+    //아래로 추가 구현부-----------------------------------------------
+
+    public static String[] parseRequestLine(String requestLine) {
+        return requestLine.split(" ");
+    }
+
+    public static String getMethod(String requestLine) {
+        return parseRequestLine(requestLine)[0];
+    }
+
+    public static String getUrl(String requestLine) {
+        return parseRequestLine(requestLine)[1];
+    }
+
+    public static String getHttpVersion(String requestLine) {
+        return parseRequestLine(requestLine)[2];
+    }
+
+    public static String[] parseUrl(String url) {
+        return url.split("\\?");
+    }
+
+    public static String getParsedUrl(String url) {
+        return parseUrl(url)[0];
+    }
+
+    public static String getRequestParameter(String url) {
+        if(url.contains("?")) {
+            return parseUrl(url)[1];
+        }
+
+        return null;
+    }
+
+    public static User getUserFromRequestParameter(String requestParameter) {
+        if(requestParameter != null) {
+            return new User(parseQueryString(requestParameter));
+        }
+
+        return null;
+    }
+
+    //-------------------------------------------------------------
 
     public static class Pair {
         String key;
