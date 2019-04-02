@@ -11,17 +11,17 @@ import model.User;
 public class HttpRequestUtils {
 
     /**
-     * @param : queryString은 URL에서 ? 이후에 전달되는 field1=value1&field2=value2 형식임
-     * @return
+     * @param queryString URL에서 ? 이후에 전달되는 field1=value1&field2=value2 형식임
      */
+
     public static Map<String, String> parseQueryString(String queryString) {
         return parseValues(queryString, "&");
     }
 
     /**
-     * @param : 쿠키값은 name1=value1; name2=value2 형식임
-     * @return
+     * @param cookies name1=value1; name2=value2 형식임
      */
+
     public static Map<String, String> parseCookies(String cookies) {
         return parseValues(cookies, ";");
     }
