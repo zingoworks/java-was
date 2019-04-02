@@ -69,6 +69,30 @@ public class RequestHandler extends Thread {
                 return;
             }
 
+            if(url.equals("/user/login")) {
+                if(DataBase.findUserById(HttpRequestUtils.getUserFromRequestParameter(requestBody).getUserId()) != null) {
+                    try {
+                        dos.writeBytes("HTTP/1.1 302 Found \r\n");
+                        dos.writeBytes("Location: /index.html \r\n");
+                        dos.writeBytes("Set-Cookie: logined=true; Path=/ \r\n");
+                        dos.writeBytes("\r\n");
+                        return;
+                    } catch (IOException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+
+                try {
+                    dos.writeBytes("HTTP/1.1 302 Found \r\n");
+                    dos.writeBytes("Location: /user/login_failed.html \r\n");
+                    dos.writeBytes("Set-Cookie: logined=false; Path=/ \r\n");
+                    dos.writeBytes("\r\n");
+                    return;
+                } catch (IOException e) {
+                    log.error(e.getMessage());
+                }
+            }
+
             byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
 
             response200Header(dos, body.length);
