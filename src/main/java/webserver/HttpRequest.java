@@ -34,22 +34,21 @@ public class HttpRequest {
         log.debug("headers line : {}", headerLine);
 
         while (!headerLine.equals("")) {
-            headers.putAll(HttpRequestUtils.getHeader(headerLine));
+            headers.putAll(HttpRequestUtils.parseHeader(headerLine));
             headerLine = br.readLine();
             log.debug("headers line : {}", headerLine);
         }
-
 
         if(method == POST) {
             int contentLength = Integer.valueOf(headers.get("Content-Length"));
             String requestBody = IOUtils.readData(br, contentLength);
             log.debug("requestBody : {}", requestBody);
 
-            this.parameters = HttpRequestUtils.getParameter(requestBody);
+            this.parameters = HttpRequestUtils.parseParameters(requestBody);
             return;
         }
 
-        this.parameters = HttpRequestUtils.getParameter(HttpRequestUtils.getQueryString(requestLine));
+        this.parameters = HttpRequestUtils.parseParameters(HttpRequestUtils.getQueryString(requestLine));
     }
 
     public HttpMethod getMethod() {

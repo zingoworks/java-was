@@ -28,6 +28,6 @@ public class HttpRequestUtilsTest {
     public void getHeader() {
         Map<String, String> header = new HashMap<>();
         header.put("Connection", "keep-alive");
-        assertThat(HttpRequestUtils.getHeader(headerLine)).isEqualTo(header);
+        assertThat(HttpRequestUtils.parseHeader(headerLine)).isEqualTo(header);
     }
 }

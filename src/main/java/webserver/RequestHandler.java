@@ -26,6 +26,7 @@ public class RequestHandler extends Thread {
             HttpRequest httpRequest = new HttpRequest(in);
 
 
+
             DataOutputStream dos = new DataOutputStream(out);
             byte[] body = "Hello World".getBytes();
             response200Header(dos, body.length);
