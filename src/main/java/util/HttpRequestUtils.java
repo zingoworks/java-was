@@ -13,7 +13,9 @@ public class HttpRequestUtils {
         return firstLine.split(" ")[1];
     }
 
-
+    public static String[] getTokens(String url, String regex) {
+        return url.split(regex);
+    }
 
 
 

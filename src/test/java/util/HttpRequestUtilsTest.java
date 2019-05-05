@@ -77,4 +77,12 @@ public class HttpRequestUtilsTest {
         String url = HttpRequestUtils.parseUrl(firstLine);
         assertThat(url, is("/favicon.ico"));
     }
+
+    @Test
+    public void getTokens() throws Exception {
+        String url = "/user/create?userId=awdawd&password=awdawd&name=awdad&email=awdawd%40adad\n";
+        String[] tokens = HttpRequestUtils.getTokens(url, "\\?");
+        assertThat(tokens, is(new String[]{"/user/create", "userId=awdawd&password=awdawd&name=awdad&email=awdawd%40adad\n"}));
+    }
+
 }

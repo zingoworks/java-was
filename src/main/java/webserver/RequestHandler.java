@@ -3,6 +3,7 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,14 @@ public class RequestHandler extends Thread {
                 System.out.println(line);
             }
 
+            if(url.contains("?")) {
+                String[] tokens = HttpRequestUtils.getTokens(url, "\\?");
+                url = tokens[0];
+                String queryString = tokens[1];
+                Map<String, String> queryData = HttpRequestUtils.parseQueryString(queryString);
+            }
+
             if(url.contains(".")) {
-                System.out.println(url);
                 byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
                 DataOutputStream dos = new DataOutputStream(out);
                 response200Header(dos, body.length);
