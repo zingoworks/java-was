@@ -61,19 +61,35 @@ public class RequestHandler extends Thread {
                 String requestBody = IOUtils.readData(br, contentLength);
                 Map<String, String> userValues = HttpRequestUtils.parseQueryString(requestBody);
 
-                User user = new User(
-                        userValues.get("userId"),
-                        userValues.get("password"),
-                        userValues.get("name"),
-                        userValues.get("email")
-                );
+                if(url.endsWith("login")) {
+                    User target = DataBase.findUserById(userValues.get("userId"));
 
-                DataBase.addUser(user);
-                System.out.println(requestBody + "\n");
+                    if(target != null && target.getPassword().equals(userValues.get("password"))) {
+                        DataOutputStream dos = new DataOutputStream(out);
+                        response302HeaderWithLogin(dos, "/index.html", true);
+                    } else {
+                        DataOutputStream dos = new DataOutputStream(out);
+                        response302HeaderWithLogin(dos, "/user/login_failed.html", false);
+                    }
+                }
 
-                DataOutputStream dos = new DataOutputStream(out);
-                response302Header(dos, "/index.html");
+                if(url.endsWith("create")) {
+                    User user = new User(
+                            userValues.get("userId"),
+                            userValues.get("password"),
+                            userValues.get("name"),
+                            userValues.get("email")
+                    );
+
+                    DataBase.addUser(user);
+                    System.out.println(requestBody + "\n");
+
+                    DataOutputStream dos = new DataOutputStream(out);
+                    response302Header(dos, "/index.html");
+                }
             }
+
+
 
             if(url.contains("?")) {
                 String[] tokens = HttpRequestUtils.getTokens(url, "\\?");
@@ -113,6 +129,17 @@ public class RequestHandler extends Thread {
         try {
             dos.writeBytes("HTTP/1.1 302 Found \r\n");
             dos.writeBytes("Location: " + redirectPath + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void response302HeaderWithLogin(DataOutputStream dos, String redirectPath, boolean logined) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + redirectPath + "\r\n");
+            dos.writeBytes("Set-Cookie: logined=" + logined + "; Path=/\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             log.error(e.getMessage());
