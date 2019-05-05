@@ -70,4 +70,11 @@ public class HttpRequestUtilsTest {
         Pair pair = HttpRequestUtils.parseHeader(header);
         assertThat(pair, is(new Pair("Content-Length", "59")));
     }
+
+    @Test
+    public void parseUrl() throws Exception {
+        String firstLine = "GET /favicon.ico HTTP/1.1\n";
+        String url = HttpRequestUtils.parseUrl(firstLine);
+        assertThat(url, is("/favicon.ico"));
+    }
 }
