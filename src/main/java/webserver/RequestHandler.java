@@ -3,11 +3,16 @@ package webserver;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import db.DataBase;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpRequestUtils;
+import util.IOUtils;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -24,15 +29,47 @@ public class RequestHandler extends Thread {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String line = br.readLine();
-            System.out.println(line);
 
-            String url = HttpRequestUtils.parseUrl(line);
-            System.out.println(url);
+            String requestHeader = br.readLine();
+            System.out.println(requestHeader);
 
-            while(!line.equals("")) {
-                line = br.readLine();
-                System.out.println(line);
+            String method = HttpRequestUtils.parseMethod(requestHeader);
+            String url = HttpRequestUtils.parseUrl(requestHeader);
+
+            List<HttpRequestUtils.Pair> header = new ArrayList<>();
+
+            while(true) {
+                requestHeader = br.readLine();
+                System.out.println(requestHeader);
+
+                if(requestHeader.equals("")) {
+                    break;
+                }
+
+                header.add(HttpRequestUtils.parseHeader(requestHeader));
+            }
+
+            if(method.equals("POST")) {
+                int contentLength = 0;
+
+                for (HttpRequestUtils.Pair pair : header) {
+                    if(pair.getKey().equals("Content-Length")) {
+                        contentLength = Integer.parseInt(pair.getValue());
+                    }
+                }
+
+                String requestBody = IOUtils.readData(br, contentLength);
+                Map<String, String> userValues = HttpRequestUtils.parseQueryString(requestBody);
+
+                User user = new User(
+                        userValues.get("userId"),
+                        userValues.get("password"),
+                        userValues.get("name"),
+                        userValues.get("email")
+                );
+
+                DataBase.addUser(user);
+                System.out.println(requestBody + "\n");
             }
 
             if(url.contains("?")) {
@@ -41,6 +78,12 @@ public class RequestHandler extends Thread {
                 String queryString = tokens[1];
                 Map<String, String> queryData = HttpRequestUtils.parseQueryString(queryString);
             }
+
+//            if(method.equals("POST")) {
+//                DataOutputStream dos = new DataOutputStream(out);
+//                response200Header(dos, body.length);
+//                responseBody(dos, body);
+//            }
 
             if(url.contains(".")) {
                 byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
@@ -77,4 +120,5 @@ public class RequestHandler extends Thread {
             log.error(e.getMessage());
         }
     }
+
 }

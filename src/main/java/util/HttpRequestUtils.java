@@ -9,6 +9,10 @@ import com.google.common.collect.Maps;
 
 public class HttpRequestUtils {
 
+    public static String parseMethod(String firstLine) {
+        return firstLine.split(" ")[0];
+    }
+
     public static String parseUrl(String firstLine) {
         return firstLine.split(" ")[1];
     }
