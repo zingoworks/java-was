@@ -1,9 +1,10 @@
-package webserver;
+package webserver.request;
 
 import db.DataBase;
 import model.User;
 import util.HttpRequestUtils;
 import util.IOUtils;
+import webserver.HttpMethod;
 
 import java.io.BufferedReader;
 import java.io.IOException;

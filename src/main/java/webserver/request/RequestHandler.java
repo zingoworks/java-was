@@ -1,11 +1,13 @@
-package webserver;
+package webserver.request;
 
 import java.io.*;
 import java.net.Socket;
 
-import webserver.controller.DispatcherServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.controller.Controller;
+import webserver.controller.HandlerMapping;
+import webserver.response.HttpResponse;
 
 public class RequestHandler extends Thread {
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
@@ -24,7 +26,8 @@ public class RequestHandler extends Thread {
             HttpRequest request = new HttpRequest(in);
             HttpResponse response = new HttpResponse(out);
 
-            DispatcherServlet.process(request, response);
+            Controller controller = HandlerMapping.getController(request);
+            controller.handleRequest(request, response);
 
 
 //            if(request.getPath().endsWith("list")) {
