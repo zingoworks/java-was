@@ -1,59 +1,105 @@
 package webserver;
 
+import db.DataBase;
+import model.User;
 import util.HttpRequestUtils;
+import util.IOUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+
+import static webserver.HttpMethod.GET;
+import static webserver.HttpMethod.POST;
 
 public class HttpRequest {
 
-    private String requestLine;
-    private String method;
-    private String url;
-    private List<HttpRequestUtils.Pair> header = new ArrayList<>();
+    private HttpMethod method;
+    private String path;
+    private Map<String, String> header = new HashMap<>();
+    private Map<String, String> parameter = new HashMap<>();
 
     public HttpRequest(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        requestLine = br.readLine();
-        System.out.println(requestLine);
 
-        method = HttpRequestUtils.parseMethod(requestLine);
-        url = HttpRequestUtils.parseUrl(requestLine);
+        String[] requestLine = br.readLine().split(" ");
+        this.method = HttpMethod.of(requestLine[0]);
+        this.path = requestLine[1];
 
         while(true) {
-            requestLine = br.readLine();
-            System.out.println(requestLine);
+            String requestHeader = br.readLine();
 
-            if(requestLine.equals("")) {
+            if(requestHeader.equals("")) {
                 break;
             }
 
-            header.add(HttpRequestUtils.parseHeader(requestLine));
+            HttpRequestUtils.Pair headerPair = HttpRequestUtils.parseHeader(requestHeader);
+            header.put(headerPair.getKey(), headerPair.getValue());
+        }
+
+        if(method.equals(GET)) {
+            if(path.contains("?")) {
+                String[] tokens = HttpRequestUtils.getTokens(path, "\\?");
+                for (String token : tokens) {
+                    parameter.put(token.split("=")[0], token.split("=")[1]);
+                }
+            }
+        }
+
+        if(method.equals(POST)) {
+            int contentLength = 0;
+            if(header.containsKey("Content-Length")) {
+                contentLength = Integer.parseInt(getHeader("Content-Length"));
+            }
+
+            String requestBody = IOUtils.readData(br, contentLength);
+            parameter = HttpRequestUtils.parseQueryString(requestBody);
+
+            if(path.endsWith("create")) {
+                User user = new User(
+                        parameter.get("userId"),
+                        parameter.get("password"),
+                        parameter.get("name"),
+                        parameter.get("email")
+                );
+
+                DataBase.addUser(user);
+            }
         }
     }
 
-    public String getRequestLine() {
-        return requestLine;
-    }
-
-    public String getMethod() {
+    public HttpMethod getMethod() {
         return method;
     }
 
-    public String getUrl() {
-        return url;
+    public void setMethod(HttpMethod method) {
+        this.method = method;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public String getPath() {
+        return path;
     }
 
-    public List<HttpRequestUtils.Pair> getHeader() {
-        return header;
+    public void setPath(String path) {
+        this.path = path;
     }
+
+    public String getHeader(String key) {
+        if(!header.containsKey("key")) {
+            throw new IllegalArgumentException("존재하지 않는 Header Key 입니다.");
+        }
+        return header.get(key);
+    }
+
+    public String getParameter(String key) {
+        if(parameter.isEmpty() || !parameter.containsKey(key)) {
+            throw new IllegalArgumentException("인자가 없거나 존재하지 않는 Key 입니다.");
+        }
+        return parameter.get(key);
+    }
+
 
 }
