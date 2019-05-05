@@ -30,29 +30,13 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
-            String requestHeader = br.readLine();
-            System.out.println(requestHeader);
+            HttpRequest request = new HttpRequest(in);
+            HttpResponse response = new HttpResponse(out);
 
-            String method = HttpRequestUtils.parseMethod(requestHeader);
-            String url = HttpRequestUtils.parseUrl(requestHeader);
-
-            List<HttpRequestUtils.Pair> header = new ArrayList<>();
-
-            while(true) {
-                requestHeader = br.readLine();
-                System.out.println(requestHeader);
-
-                if(requestHeader.equals("")) {
-                    break;
-                }
-
-                header.add(HttpRequestUtils.parseHeader(requestHeader));
-            }
-
-            if(url.endsWith("list")) {
+            if(request.getUrl().endsWith("list")) {
                 String cookie = "";
 
-                for (HttpRequestUtils.Pair pair : header) {
+                for (HttpRequestUtils.Pair pair : request.getHeader()) {
                     if(pair.getKey().equals("Cookie")) {
                         cookie = pair.getValue();
                     }
@@ -63,10 +47,10 @@ public class RequestHandler extends Thread {
                 }
             }
 
-            if(method.equals("POST")) {
+            if(request.getMethod().equals("POST")) {
                 int contentLength = 0;
 
-                for (HttpRequestUtils.Pair pair : header) {
+                for (HttpRequestUtils.Pair pair : request.getHeader()) {
                     if(pair.getKey().equals("Content-Length")) {
                         contentLength = Integer.parseInt(pair.getValue());
                     }
@@ -75,7 +59,7 @@ public class RequestHandler extends Thread {
                 String requestBody = IOUtils.readData(br, contentLength);
                 Map<String, String> userValues = HttpRequestUtils.parseQueryString(requestBody);
 
-                if(url.endsWith("login")) {
+                if(request.getUrl().endsWith("login")) {
                     User target = DataBase.findUserById(userValues.get("userId"));
 
                     if(target != null && target.getPassword().equals(userValues.get("password"))) {
@@ -87,7 +71,7 @@ public class RequestHandler extends Thread {
                     }
                 }
 
-                if(url.endsWith("create")) {
+                if(request.getUrl().endsWith("create")) {
                     User user = new User(
                             userValues.get("userId"),
                             userValues.get("password"),
@@ -103,20 +87,18 @@ public class RequestHandler extends Thread {
                 }
             }
 
-
-
-            if(url.contains("?")) {
-                String[] tokens = HttpRequestUtils.getTokens(url, "\\?");
-                url = tokens[0];
+            if(request.getUrl().contains("?")) {
+                String[] tokens = HttpRequestUtils.getTokens(request.getUrl(), "\\?");
+                request.setUrl(tokens[0]);
                 String queryString = tokens[1];
                 Map<String, String> queryData = HttpRequestUtils.parseQueryString(queryString);
             }
 
-            if(url.contains(".")) {
-                byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
+            if(request.getUrl().contains(".")) {
+                byte[] body = Files.readAllBytes(new File("./webapp" + request.getUrl()).toPath());
                 DataOutputStream dos = new DataOutputStream(out);
 
-                if(url.contains("css")) {
+                if(request.getUrl().contains("css")) {
                     response200HeaderWithCss(dos, body.length);
                     responseBody(dos, body);
                 } else {
