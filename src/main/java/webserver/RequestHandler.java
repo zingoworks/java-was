@@ -49,6 +49,20 @@ public class RequestHandler extends Thread {
                 header.add(HttpRequestUtils.parseHeader(requestHeader));
             }
 
+            if(url.endsWith("list")) {
+                String cookie = "";
+
+                for (HttpRequestUtils.Pair pair : header) {
+                    if(pair.getKey().equals("Cookie")) {
+                        cookie = pair.getValue();
+                    }
+                }
+
+                if(cookie.contains("logined=true")) {
+
+                }
+            }
+
             if(method.equals("POST")) {
                 int contentLength = 0;
 
@@ -101,8 +115,14 @@ public class RequestHandler extends Thread {
             if(url.contains(".")) {
                 byte[] body = Files.readAllBytes(new File("./webapp" + url).toPath());
                 DataOutputStream dos = new DataOutputStream(out);
-                response200Header(dos, body.length);
-                responseBody(dos, body);
+
+                if(url.contains("css")) {
+                    response200HeaderWithCss(dos, body.length);
+                    responseBody(dos, body);
+                } else {
+                    response200Header(dos, body.length);
+                    responseBody(dos, body);
+                }
             } else {
                 byte[] body = "Hello World".getBytes();
                 DataOutputStream dos = new DataOutputStream(out);
@@ -118,6 +138,17 @@ public class RequestHandler extends Thread {
         try {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
+            dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void response200HeaderWithCss(DataOutputStream dos, int lengthOfBodyContent) {
+        try {
+            dos.writeBytes("HTTP/1.1 200 OK \r\n");
+            dos.writeBytes("Content-Type: text/css;charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
