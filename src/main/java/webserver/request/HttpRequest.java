@@ -72,6 +72,10 @@ public class HttpRequest {
         }
     }
 
+    public boolean isMethod(HttpMethod method) {
+        return this.method.equals(method);
+    }
+
     public HttpMethod getMethod() {
         return method;
     }

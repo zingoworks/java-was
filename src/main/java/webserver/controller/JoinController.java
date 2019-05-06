@@ -3,11 +3,14 @@ package webserver.controller;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 
-public class JoinController implements Controller {
+public class JoinController extends AbstractController {
 
-    @Override
-    public String handleRequest(HttpRequest request, HttpResponse response) {
-        return null;
+    public void doGet(HttpRequest request, HttpResponse response) {
+
+    }
+
+    public void doPost(HttpRequest request, HttpResponse response) {
+
     }
 
 }

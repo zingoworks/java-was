@@ -3,7 +3,7 @@ package webserver.controller;
 import webserver.request.HttpRequest;
 import webserver.response.HttpResponse;
 
-public class LoginController extends AbstractController{
+public class ViewController extends AbstractController {
 
     public void doGet(HttpRequest request, HttpResponse response) {
 
