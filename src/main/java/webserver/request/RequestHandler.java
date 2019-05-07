@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import webserver.HandlerMapping;
 import webserver.controller.Controller;
 import webserver.response.HttpResponse;
 
@@ -24,6 +25,9 @@ public class RequestHandler extends Thread {
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             HttpRequest request = new HttpRequest(in);
             HttpResponse response = new HttpResponse(out);
+
+            Controller controller = HandlerMapping.getController(request);
+            controller.handleRequest(request, response);
 
 //            if(request.getPath().endsWith("list")) {
 //                String cookie = "";

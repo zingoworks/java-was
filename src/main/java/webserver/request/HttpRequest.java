@@ -14,9 +14,6 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import static webserver.HttpMethod.GET;
-import static webserver.HttpMethod.POST;
-
 public class HttpRequest {
 
     private HttpMethod method;
@@ -39,6 +36,10 @@ public class HttpRequest {
 
     public String getPath() {
         return path;
+    }
+
+    public HttpMethod getMethod() {
+        return method;
     }
 
     public String getHeader(String key) {
