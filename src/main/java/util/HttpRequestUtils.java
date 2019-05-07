@@ -21,11 +21,6 @@ public class HttpRequestUtils {
         return url.split(regex);
     }
 
-
-
-
-
-
     /**
      * @param queryString은
      *            URL에서 ? 이후에 전달되는 field1=value1&field2=value2 형식임
@@ -124,4 +119,5 @@ public class HttpRequestUtils {
             return "Pair [key=" + key + ", value=" + value + "]";
         }
     }
+
 }

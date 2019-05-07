@@ -3,6 +3,7 @@ package model;
 import java.util.Objects;
 
 public class User {
+
     private String userId;
     private String password;
     private String name;
@@ -19,16 +20,8 @@ public class User {
         return userId;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public String getEmail() {
-        return email;
     }
 
     public boolean isMatchPassword(String password) {

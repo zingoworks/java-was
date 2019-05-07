@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import webserver.request.RequestHandler;
 
 public class WebServer {
+
     private static final Logger log = LoggerFactory.getLogger(WebServer.class);
     private static final int DEFAULT_PORT = 8080;
 
@@ -32,4 +33,5 @@ public class WebServer {
             }
         }
     }
+
 }

@@ -10,6 +10,7 @@ import webserver.controller.Controller;
 import webserver.response.HttpResponse;
 
 public class RequestHandler extends Thread {
+
     private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
     private Socket connection;
