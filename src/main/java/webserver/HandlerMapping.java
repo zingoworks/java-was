@@ -12,15 +12,14 @@ public class HandlerMapping {
 
     private static Map<String, Controller> mappings = new HashMap<>();
 
-    private static void initMapping() {
+    static {
         mappings.put("/", new HomeController());
         mappings.put("/user/create", new CreateUserController());
         mappings.put("/user/list", new ListUserController());
-        mappings.put("/login", new LoginController());
+        mappings.put("/user/login", new LoginController());
     }
 
     public static Controller getController(HttpRequest request) {
-        initMapping();
         if(!mappings.containsKey(request.getPath())) {
             return new ViewController();
         }

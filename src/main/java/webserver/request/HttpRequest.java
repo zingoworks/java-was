@@ -1,7 +1,5 @@
 package webserver.request;
 
-import db.DataBase;
-import model.User;
 import util.HttpRequestUtils;
 import util.IOUtils;
 import webserver.HttpHeader;
@@ -20,14 +18,19 @@ public class HttpRequest {
     private String path;
     private HttpHeader header;
     private Map<String, String> parameter = new HashMap<>();
+//    private HttpBody body;
 
     public HttpRequest(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
         String[] requestLine = br.readLine().split(" ");
         this.method = HttpMethod.of(requestLine[0]);
         this.path = requestLine[1];
         this.header = new HttpHeader(br);
+        String body = "";
+        if(header.containsKey("Content-Length")) {
+            body = IOUtils.readData(br, Integer.parseInt(header.getHeader("Content-Length")));
+        }
+        this.parameter = HttpRequestUtils.parseQueryString(body);
     }
 
     public boolean isMethod(HttpMethod method) {
@@ -46,10 +49,11 @@ public class HttpRequest {
         return header.getHeader(key);
     }
 
+    public Map<String, String> getParameters() {
+        return parameter;
+    }
+
     public String getParameter(String key) {
-        if(parameter.isEmpty() || !parameter.containsKey(key)) {
-            throw new IllegalArgumentException("인자가 없거나 존재하지 않는 Key 입니다.");
-        }
         return parameter.get(key);
     }
 

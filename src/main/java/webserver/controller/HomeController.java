@@ -7,6 +7,7 @@ import java.io.IOException;
 
 public class HomeController extends AbstractController {
 
+    @Override
     public void doGet(HttpRequest request, HttpResponse response) throws IOException {
         System.out.println("HomeController detected : " + request.getPath());
         response.forward("/index.html");

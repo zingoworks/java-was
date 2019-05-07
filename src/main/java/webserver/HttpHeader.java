@@ -28,4 +28,7 @@ public class HttpHeader {
         return header.get(key);
     }
 
+    public boolean containsKey(String key) {
+        return header.containsKey(key);
+    }
 }

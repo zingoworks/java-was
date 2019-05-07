@@ -20,14 +20,11 @@ public class HttpResponse {
 
     private Map<String, String> header;
     private DataOutputStream dos;
+    private String body = "Hello";
 
     public HttpResponse(OutputStream out) {
         this.dos = new DataOutputStream(out);
         this.header = new HashMap<>();
-    }
-
-    public void addHeader(String key, String value) {
-        header.put(key, value);
     }
 
     public void forward(String path) throws IOException {
@@ -46,6 +43,13 @@ public class HttpResponse {
         dos.flush();
     }
 
+    public void sendRedirect(String location) throws IOException {
+        dos.writeBytes("HTTP/1.1 302 Found \r\n");
+        dos.writeBytes("Location: " + location + "\r\n");
+        processHeaders();
+        dos.flush();
+    }
+
     private void responseBody(byte[] body) throws IOException {
         dos.write(body, 0, body.length);
     }
@@ -55,11 +59,8 @@ public class HttpResponse {
         dos.writeBytes("Content-Length: " + contentLength + "\r\n");
     }
 
-    public void sendRedirect(String location) throws IOException {
-        dos.writeBytes("HTTP/1.1 302 Found \r\n");
-        dos.writeBytes("Location: " + location + "\r\n");
-        processHeaders();
-        dos.flush();
+    public void addHeader(String key, String value) {
+        header.put(key, value);
     }
 
     private void processHeaders() throws IOException {

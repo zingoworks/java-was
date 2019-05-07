@@ -5,6 +5,7 @@ import webserver.response.HttpResponse;
 
 public class ListUserController extends AbstractController {
 
+    @Override
     public void doGet(HttpRequest request, HttpResponse response) {
         if(isLogin(request.getHeader("Cookie"))) {
             return;
