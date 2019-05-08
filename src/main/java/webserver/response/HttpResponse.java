@@ -1,9 +1,5 @@
 package webserver.response;
 
-import webserver.HttpBody;
-import webserver.HttpHeader;
-import webserver.HttpStatus;
-
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;

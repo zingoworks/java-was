@@ -28,7 +28,8 @@ public class HttpHeader {
         return header.get(key);
     }
 
-    public boolean containsKey(String key) {
-        return header.containsKey(key);
+    public int getContentLength() {
+        return Integer.parseInt(header.getOrDefault("Content-Length", "0"));
     }
+
 }
