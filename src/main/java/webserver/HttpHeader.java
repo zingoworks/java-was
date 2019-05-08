@@ -28,6 +28,7 @@ public class HttpHeader {
         return header.get(key);
     }
 
+    //TODO body, contentlength 관련 리팩토링 필요
     public int getContentLength() {
         return Integer.parseInt(header.getOrDefault("Content-Length", "0"));
     }

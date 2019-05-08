@@ -11,7 +11,7 @@ public enum HttpMethod {
                 return value;
             }
         }
-
         return GET;
     }
+
 }

@@ -1,7 +1,5 @@
 package webserver;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import webserver.controller.*;
 import webserver.request.HttpRequest;
 
