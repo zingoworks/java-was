@@ -11,6 +11,7 @@ public class HandlerMapping {
     private static Map<String, Controller> mappings = new HashMap<>();
 
     static {
+        //TODO URI 하드코딩 처리필요
         mappings.put("/", new HomeController());
         mappings.put("/user/create", new CreateUserController());
         mappings.put("/user/list", new ListUserController());
@@ -18,11 +19,9 @@ public class HandlerMapping {
     }
 
     public static Controller getController(HttpRequest request) {
-        if(!mappings.containsKey(request.getPath())) {
-            return new ViewController();
-        }
-
-        return mappings.get(request.getPath());
+        return mappings.containsKey(request.getPath())
+                ? mappings.get(request.getPath())
+                : new ViewController();
     }
 
 }

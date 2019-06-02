@@ -16,7 +16,6 @@ public class HttpResponse {
 
     private Map<String, String> header;
     private DataOutputStream dos;
-    private String body = "Hello";
 
     public HttpResponse(OutputStream out) {
         this.dos = new DataOutputStream(out);
